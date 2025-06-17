@@ -3,381 +3,438 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statyczna Mapa Medalów - Test</title>
-   <!-- <link rel="stylesheet" href="leaflet/leaflet.css">-->
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <title>🏆 Mapa Medalów - Beskid Niski</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+    
     <style>
         body {
             margin: 0;
-            padding: 20px;
+            padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f5f5;
+            background-color: #f0f4f8;
         }
-
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .header p {
-            margin: 10px 0 0 0;
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-
+        
+        /* Kontener dla mapy - górne 50% ekranu */
         #map {
-            height: 70vh;
+            height: 50vh;
             width: 100%;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            border: 3px solid #fff;
+            background-color: #e8f4f8;
+            border-bottom: 3px solid #2c5aa0;
         }
-
-        .medal-popup {
-            min-width: 250px;
+        
+        /* Kontener dla tabeli - dolne 50% ekranu */
+        .medals-table-container {
+            height: 50vh;
+            overflow-y: auto;
+            background-color: #ffffff;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+        
+        .medals-table-title {
             text-align: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .medal-popup h3 {
-            color: #2c3e50;
-            margin: 0 0 15px 0;
-            font-size: 1.3em;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 8px;
-        }
-
-        .medal-info {
-            background: #ecf0f1;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c5aa0;
+            margin-bottom: 20px;
             padding: 10px;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
             border-radius: 8px;
-            margin: 10px 0;
-        }
-
-        .medal-counter {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #27ae60;
-        }
-
-        .medal-button {
-            background: linear-gradient(45deg, #3498db, #2980b9);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            margin-top: 15px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .medal-button:hover {
-            background: linear-gradient(45deg, #2980b9, #1f4e79);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-
-        .medal-button:disabled {
-            background: #95a5a6;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-
-        .stats-panel {
-            background: white;
-            padding: 20px;
-            margin-top: 20px;
-            border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
         }
-
-        .stat-item {
+        
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        #medalsTable {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            font-size: 14px;
+        }
+        
+        #medalsTable th {
+            background: linear-gradient(135deg, #2c5aa0, #1976d2);
+            color: white;
+            padding: 12px 8px;
             text-align: center;
-            min-width: 120px;
-        }
-
-        .stat-number {
-            font-size: 2em;
             font-weight: bold;
-            color: #3498db;
-            display: block;
+            border: 1px solid #1565c0;
         }
-
-        .stat-label {
-            color: #7f8c8d;
-            font-size: 0.9em;
-            text-transform: uppercase;
+        
+        #medalsTable td {
+            padding: 10px 8px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            vertical-align: middle;
         }
-
+        
+        #medalsTable tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        #medalsTable tbody tr:hover {
+            background-color: #e3f2fd;
+            transition: background-color 0.2s ease;
+        }
+        
+        .medal-count-available {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .medal-count-zero {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .medal-count-total {
+            color: #6c757d;
+            font-weight: normal;
+        }
+        
+        /* Panel informacyjny */
+        .info-panel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+            max-width: 300px;
+        }
+        
+        .info-panel h3 {
+            margin: 0 0 10px 0;
+            color: #2c5aa0;
+            font-size: 18px;
+        }
+        
+        .counter {
+            display: inline-block;
+            margin: 5px 10px 5px 0;
+            padding: 8px 12px;
+            background: #e3f2fd;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #1976d2;
+            border: 2px solid #bbdefb;
+        }
+        
         .reset-button {
-            background: #e74c3c;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #dc3545;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
+            padding: 10px 15px;
+            border-radius: 5px;
             cursor: pointer;
-            margin-top: 20px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
+            font-weight: bold;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-
+        
         .reset-button:hover {
-            background: #c0392b;
+            background: #c82333;
         }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.8em;
+        
+        /* Responsywność dla tabeli */
+        @media (max-width: 600px) {
+            .medals-table-title {
+                font-size: 20px;
+                padding: 8px;
             }
-
-            #map {
-                height: 60vh;
+            
+            #medalsTable,
+            #medalsTable thead,
+            #medalsTable tbody,
+            #medalsTable th,
+            #medalsTable td,
+            #medalsTable tr {
+                display: block;
             }
-
-            .stats-panel {
-                flex-direction: column;
+            
+            #medalsTable thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
             }
-
-            .stat-item {
-                margin-bottom: 15px;
+            
+            #medalsTable tr {
+                background: white;
+                border: 1px solid #ccc;
+                margin-bottom: 10px;
+                padding: 10px;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            
+            #medalsTable td {
+                border: none;
+                border-bottom: 1px solid #eee;
+                position: relative;
+                padding-left: 50%;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                text-align: left;
+            }
+            
+            #medalsTable td:before {
+                content: attr(data-label) ": ";
+                position: absolute;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                font-weight: bold;
+                color: #2c5aa0;
             }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🏆 Mapa Medalów</h1>
-        <p>Kliknij w pinezki na mapie, aby zebrać medale. Stan jest zapisywany lokalnie w przeglądarce.</p>
-    </div>
-
+    <!-- Mapa - górne 50% ekranu -->
     <div id="map"></div>
-
-    <div class="stats-panel">
-        <div class="stat-item">
-            <span class="stat-number" id="collected-count">0</span>
-            <span class="stat-label">Zebrane medale</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-number" id="total-available">0</span>
-            <span class="stat-label">Dostępne medale</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-number" id="total-medals">0</span>
-            <span class="stat-label">Wszystkie medale</span>
+    
+ 
+    
+    <!-- Przycisk resetowania -->
+    <button class="reset-button" onclick="resetAllMedals()">🔄 Resetuj wszystkie</button>
+    
+    <!-- Tabela medalów - dolne 50% ekranu -->
+    <div class="medals-table-container">
+        <div class="medals-table-title">📋 Lista Medalów</div>
+        <div class="table-wrapper">
+            <table id="medalsTable">
+                <thead>
+                    <tr>
+                       
+                        <th>Nazwa Medalu</th>
+                        <th>Medale</th>
+                        
+                    </tr>
+                </thead>
+                <tbody id="medalsTableBody">
+                    <!-- Wiersze generowane przez JavaScript -->
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <button class="reset-button" onclick="resetAllMedals()">🔄 Resetuj wszystkie medale</button>
-
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+    
+    <!-- Dane medalów -->
     <script src="medale.js"></script>
+    
     <script>
-        // Inicjalizacja mapy z niestandardowym obrazem
+        // Inicjalizacja mapy z CRS.Simple dla niestandardowego obrazu
         const map = L.map('map', {
             crs: L.CRS.Simple,
-            minZoom: -2,
+            minZoom: -1,
             maxZoom: 3,
-            center: [0, 0],
-            zoom: 0
+            zoomControl: true,
+            scrollWheelZoom: true
         });
+        
+        map.on('click', function(e) {
+            console.log(e.latlng);
+        } );
 
-        // Wymiary obrazu mapy (możesz dostosować do swojego obrazu)
-        const mapWidth = 2560;
-        const mapHeight = 1809;
-        const bounds = [[0, 0], [mapHeight, mapWidth]];
-
-        // Dodanie obrazu mapy jako overlay
+        // Rozmiary obrazu (1536x1085 px zgodnie z komentarzem w medale.js)
+        const imageWidth = 1536;
+        const imageHeight = 1085;
+        
+        // Granice obrazu dla Leaflet (odwracamy Y ze względu na inny system współrzędnych)
+        const bounds = [[0, 0], [imageHeight, imageWidth]];
+        map.setMaxBounds(bounds); //TODO
+        
+        // Dodanie obrazu mapy (zakładam, że plik to mapa-przyklad.jpg)
         const imageOverlay = L.imageOverlay('mapa-przyklad.jpg', bounds).addTo(map);
-
+        
         // Ustawienie widoku mapy
-        map.fitBounds(bounds);
-        map.setView([mapHeight/2, mapWidth/2], 0);
+        map.setView([imageHeight/2, imageWidth/2], 0);
+       
 
-        // Obiekt do przechowywania referencji do pinezek
-        const medalMarkers = {};
+        // Przechowywanie markerów
+        let markers = [];
 
-        // Funkcja pobierania aktualnego licznika medalu
-        function pobierzLicznikMedalu(medalId) {
-            const saved = localStorage.getItem(`medal-${medalId}`);
-            if (saved !== null) {
-                return parseInt(saved);
-            }
-            // Jeśli nie ma zapisanej wartości, zwróć początkową ilość
-            const medal = medale.find(m => m.id === medalId);
-            return medal ? medal.poczatkowa_ilosc : 0;
+        // FUNKCJE ZARZĄDZANIA LOCALSTORAGE
+        function getMedalTakenCount(medalId) {
+            const takenMedals = JSON.parse(localStorage.getItem('takenMedals') || '{}');
+            return takenMedals[medalId] || 0;
         }
 
-        // Funkcja zapisywania licznika medalu
-        function zapiszLicznnikMedalu(medalId, nowaWartosc) {
-            localStorage.setItem(`medal-${medalId}`, nowaWartosc.toString());
-            aktualizujStatystyki();
+        function updateTakenMedal(medalId) {
+            const takenMedals = JSON.parse(localStorage.getItem('takenMedals') || '{}');
+            // Każdy użytkownik może zabrać tylko jeden medal o konkretnym ID
+            takenMedals[medalId] = 1;
+            localStorage.setItem('takenMedals', JSON.stringify(takenMedals));
         }
 
-        // Funkcja zabrania medalu
-        function zabierzMedal(medalId) {
-            const aktualnyLicznik = pobierzLicznikMedalu(medalId);
-
-            if (aktualnyLicznik > 0) {
-                const nowyLicznik = aktualnyLicznik - 1;
-                zapiszLicznnikMedalu(medalId, nowyLicznik);
-
-                // Aktualizacja interfejsu
-                document.getElementById(`counter-${medalId}`).textContent = nowyLicznik;
-
-                // Zablokowanie przycisku jeśli medale się skończyły
-                const przycisk = document.getElementById(`button-${medalId}`);
-                if (nowyLicznik === 0) {
-                    przycisk.disabled = true;
-                    przycisk.textContent = '❌ Brak medali';
-
-                    // Zmiana koloru pinezki na szary
-                    if (medalMarkers[medalId]) {
-                        medalMarkers[medalId].setStyle({
-                            color: '#95a5a6',
-                            fillColor: '#bdc3c7'
-                        });
-                    }
-                }
-
-                // Efekt wizualny
-                przycisk.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    przycisk.style.transform = 'scale(1)';
-                }, 150);
-
-                console.log(`Medal ${medalId} zabrany. Pozostało: ${nowyLicznik}`);
-            }
-        }
-
-        // Funkcja resetowania wszystkich medali
         function resetAllMedals() {
-            if (confirm('Czy na pewno chcesz zresetować wszystkie medale do stanu początkowego?')) {
-                medale.forEach(medal => {
-                    localStorage.removeItem(`medal-${medal.id}`);
-                });
-
-                // Przeładowanie strony dla prostoty
-                location.reload();
+            if (confirm('Czy na pewno chcesz zresetować wszystkie medale?')) {
+                localStorage.removeItem('takenMedals');
+                initializeMap();
+                updateCounters();
+                updateMedalTable();
             }
         }
 
-        // Funkcja aktualizacji statystyk
-        function aktualizujStatystyki() {
-            let zebraneMetale = 0;
-            let dostepneMetale = 0;
-            let wszystkieMetale = 0;
+        // FUNKCJA ZABIERANIA MEDALU
+        function takeMedal(medalId, marker) {
+            const medal = medale.find(m => m.id === medalId);
+            if (!medal) return;
 
-            medale.forEach(medal => {
-                const aktualna = pobierzLicznikMedalu(medal.id);
-                const poczatkowa = medal.poczatkowa_ilosc;
+            // Sprawdź czy użytkownik już zabrał ten medal
+            const takenCount = getMedalTakenCount(medalId);
+            if (takenCount >= 1) {
+                alert(`Już zabrałeś medal "${medal.nazwa}"! Każdy może zabrać tylko jeden medal tego typu.`);
+                return;
+            }
 
-                dostepneMetale += aktualna;
-                wszystkieMetale += poczatkowa;
-                zebraneMetale += (poczatkowa - aktualna);
-            });
-
-            document.getElementById('collected-count').textContent = zebraneMetale;
-            document.getElementById('total-available').textContent = dostepneMetale;
-            document.getElementById('total-medals').textContent = wszystkieMetale;
+            // Zabierz medal
+            updateTakenMedal(medalId);
+            
+            // Usuń marker z mapy
+            map.removeLayer(marker);
+            
+            // Aktualizuj liczniki i tabelę
+            updateCounters();
+            updateMedalTable();
+            
+            alert(`Medal "${medal.nazwa}" został zebrany!`);
         }
 
-        // Inicjalizacja pinezek na mapie
-        function inicjalizujPinezki() {
+        // INICJALIZACJA MARKERÓW
+        function initializeMap() {
+            // Usuń istniejące markery
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+
             medale.forEach(medal => {
-                const aktualnyLicznik = pobierzLicznikMedalu(medal.id);
-                const czyDostepny = aktualnyLicznik > 0;
-
-                // Określenie koloru pinezki
-                const kolor = czyDostepny ? medal.kolor : '#95a5a6';
-                const kolorWypelnienia = czyDostepny ? medal.kolor : '#bdc3c7';
-
-                // Tworzenie pinezki jako koło
-                const pinezka = L.circle([medal.y, medal.x], {
-                    color: kolor,
-                    fillColor: kolorWypelnienia,
-                    fillOpacity: 0.7,
-                    radius: 30,
-                    weight: 3
-                }).addTo(map);
-
-                // Zapisanie referencji do pinezki
-                medalMarkers[medal.id] = pinezka;
-
-                // Tworzenie zawartości popup-a
-                const tekstPrzycisku = czyDostepny ? '🏆 Zabierz medal' : '❌ Brak medali';
-                const stanPrzycisku = czyDostepny ? '' : 'disabled';
-
-                const popupContent = `
-                    <div class="medal-popup">
-                        <h3>🏅 ${medal.nazwa}</h3>
-                        <div class="medal-info">
-                            <p><strong>Opis:</strong> ${medal.opis || 'Cenny medal do zebrania'}</p>
-                            <div class="medal-counter">
-                                Dostępne: <span id="counter-${medal.id}">${aktualnyLicznik}</span>
-                            </div>
+                const takenCount = getMedalTakenCount(medal.id);
+                
+                // Pokaż marker tylko jeśli medal nie został jeszcze zabrany
+                if (takenCount === 0) {
+                    // Konwersja współrzędnych X,Y na współrzędne Leaflet
+                    // X -> lng (druga współrzędna), Y -> lat (pierwsza współrzędna, odwrócona)
+                    const lat =  medal.y;  // Odwracamy Y
+                    const lng = medal.x;
+                    
+                    const marker = L.marker([lat, lng]).addTo(map);
+                    
+                    // Popup bez informacji "Zebrane przez Ciebie"
+                    const popupContent = `
+                        <div style="text-align: center; min-width: 200px;">
+                            <h3 style="margin: 0 0 10px 0; color: #2c5aa0;">🏆 ${medal.nazwa}</h3>
+                            <p style="margin: 5px 0; color: #666;">${medal.opis}</p>
+                            <p style="margin: 10px 0 15px 0; font-weight: bold; color: #28a745;">
+                                Dostępne: ${medal.poczatkowa_ilosc - takenCount} medali
+                            </p>
+                            <button onclick="takeMedal(${medal.id}, markers[${markers.length}])" 
+                                    style="background: #28a745; color: white; border: none; 
+                                           padding: 10px 20px; border-radius: 5px; cursor: pointer; 
+                                           font-weight: bold; font-size: 14px;">
+                                🏆 Zabieram medal
+                            </button>
                         </div>
-                        <button 
-                            class="medal-button" 
-                            id="button-${medal.id}"
-                            onclick="zabierzMedal(${medal.id})"
-                            ${stanPrzycisku}
-                        >
-                            ${tekstPrzycisku}
-                        </button>
-                    </div>
-                `;
-
-                // Powiązanie popup-a z pinezką
-                pinezka.bindPopup(popupContent, {
-                    maxWidth: 300,
-                    className: 'custom-popup'
-                });
-
-                // Tooltip z nazwą medalu
-                pinezka.bindTooltip(medal.nazwa, {
-                    permanent: false,
-                    direction: 'top',
-                    offset: [0, -10]
-                });
+                    `;
+                    
+                    marker.bindPopup(popupContent);
+                   
+                    marker.on('popupclose', function() {
+            map.setMaxBounds(bounds);
+        });
+                          marker.on('popupopen', function() {
+            map.setMaxBounds(null);
+        });
+                    // onOpen set
+                    //// map.setMaxBounds(bounds);
+                   
+                    markers.push(marker);
+                }
             });
-
-            // Aktualizacja statystyk na początku
-            aktualizujStatystyki();
         }
 
-        // Inicjalizacja aplikacji po załadowaniu
+        // AKTUALIZACJA LICZNIKÓW
+        function updateCounters() {
+            let collectedTotal = 0;
+            let availableTotal = 0;
+            let grandTotal = 0;
+
+            medale.forEach(medal => {
+                const takenCount = getMedalTakenCount(medal.id);
+                collectedTotal += Math.min(takenCount, 1); // Max 1 na medal
+                availableTotal += medal.poczatkowa_ilosc - Math.min(takenCount, 1);
+                grandTotal += medal.poczatkowa_ilosc;
+            });
+        }
+
+        // AKTUALIZACJA TABELI MEDALÓW
+        function updateMedalTable() {
+            const tableBody = document.getElementById('medalsTableBody');
+            tableBody.innerHTML = '';
+
+            medale.forEach(medal => {
+                const takenCount = getMedalTakenCount(medal.id);
+                const availableCount = Math.max(0, medal.poczatkowa_ilosc - takenCount);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                  
+                    <td data-label="Nazwa Medalu">${medal.nazwa}</td>
+                    <td data-label="Medale" class="${availableCount > 0 ? 'medal-count-available' : 'medal-count-zero'}">
+                        ${availableCount} / ${medal.poczatkowa_ilosc}
+                    </td>
+                    
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        // RESPONSYWNOŚĆ MAPY
+        function fitMapToScreen() {
+            map.invalidateSize();
+            map.fitBounds(bounds);
+     
+            
+        }
+
+        // Event listenery dla responsywności
+        window.addEventListener('resize', function() {
+            setTimeout(fitMapToScreen, 100);
+        });
+
+        window.addEventListener('orientationchange', function() {
+            setTimeout(fitMapToScreen, 200);
+        });
+
+        // INICJALIZACJA PO ZAŁADOWANIU
+        imageOverlay.on('load', function() {
+            fitMapToScreen();
+        });
+
+        // Inicjalizacja aplikacji
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Inicjalizacja mapy medalów...');
-            console.log(`📍 Załadowano ${medale.length} medali`);
-            inicjalizujPinezki();
-        });
-
-        // Dodanie obsługi zdarzeń dla lepszej interakcji
-        map.on('popupopen', function(e) {
-            console.log('Popup otwarty dla medalu');
-        });
-
-        map.on('zoomend', function(e) {
-            console.log(`Zoom zmieniony na: ${map.getZoom()}`);
+            initializeMap();
+            updateCounters();
+            updateMedalTable();
+            setTimeout(fitMapToScreen, 100);
         });
     </script>
 </body>
