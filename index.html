@@ -244,7 +244,7 @@
         // Inicjalizacja mapy z CRS.Simple dla niestandardowego obrazu
         const map = L.map('map', {
             crs: L.CRS.Simple,
-            minZoom: -1,
+            minZoom: -2,
             maxZoom: 3,
             zoomControl: true,
             scrollWheelZoom: true
@@ -310,7 +310,9 @@
             updateTakenMedal(medalId);
             
             // Usuń marker z mapy
-            map.removeLayer(marker);
+           // map.removeLayer(marker);
+           marker.closePopup();
+           initializeMap();
             
             // Aktualizuj liczniki i tabelę
             updateCounters();
@@ -329,13 +331,22 @@
                 const takenCount = getMedalTakenCount(medal.id);
                 
                 // Pokaż marker tylko jeśli medal nie został jeszcze zabrany
-                if (takenCount === 0) {
+               
                     // Konwersja współrzędnych X,Y na współrzędne Leaflet
                     // X -> lng (druga współrzędna), Y -> lat (pierwsza współrzędna, odwrócona)
                     const lat =  medal.y;  // Odwracamy Y
                     const lng = medal.x;
                     
                     const marker = L.marker([lat, lng]).addTo(map);
+                    var button = "";
+                     if (takenCount === 0) {
+                     button = ` <button onclick="takeMedal(${medal.id}, markers[${markers.length}])" 
+                                    style="background: #28a745; color: white; border: none; 
+                                           padding: 10px 20px; border-radius: 5px; cursor: pointer; 
+                                           font-weight: bold; font-size: 14px;">
+                                🏆 Zabieram medal
+                            </button>`;
+                     }
                     
                     // Popup bez informacji "Zebrane przez Ciebie"
                     const popupContent = `
@@ -345,12 +356,7 @@
                             <p style="margin: 10px 0 15px 0; font-weight: bold; color: #28a745;">
                                 Dostępne: ${medal.poczatkowa_ilosc - takenCount} medali
                             </p>
-                            <button onclick="takeMedal(${medal.id}, markers[${markers.length}])" 
-                                    style="background: #28a745; color: white; border: none; 
-                                           padding: 10px 20px; border-radius: 5px; cursor: pointer; 
-                                           font-weight: bold; font-size: 14px;">
-                                🏆 Zabieram medal
-                            </button>
+                           ${button}
                         </div>
                     `;
                     
@@ -366,7 +372,7 @@
                     //// map.setMaxBounds(bounds);
                    
                     markers.push(marker);
-                }
+                
             });
         }
 
