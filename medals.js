@@ -2,6 +2,8 @@
 // y / lat - vertical position from the top edge
 
 const mapPath = 'mapa-przyklad.jpg';
+const imageWidth = 2560;
+const imageHeight = 1809;
 
 const medals = [
     {
@@ -55,15 +57,15 @@ map.on('click', function(e) {
     console.log('x: '+e.latlng.lng+', y: '+e.latlng.lat+',');
 } );
 
-const mapImg = new Image();
-mapImg.src = mapPath;
-const imageWidth = mapImg.naturalWidth;
-const imageHeight = mapImg.naturalHeight;
+// const mapImg = new Image();
+// mapImg.src = mapPath;
+// const imageWidth = mapImg.naturalWidth;
+// const imageHeight = mapImg.naturalHeight;
 
 const bounds = [[0, 0], [imageHeight, imageWidth]];
 map.setMaxBounds(bounds);
 
-const imageOverlay = L.imageOverlay(mapImg.src, bounds).addTo(map);
+const imageOverlay = L.imageOverlay(mapPath, bounds).addTo(map);
 
 // Sets the view of the map (geographical center and zoom)
 map.setView([imageHeight/2, imageWidth/2], 0);
@@ -97,7 +99,7 @@ function takeMedal(medalId, marker) {
     const medal = medals.find(m => m.id === medalId);
     if (!medal) return;
 
-    // Sprawdź czy użytkownik już zabrał ten medal
+
     const takenCount = getMedalTakenCount(medalId);
     if (takenCount >= 1) {
         alert(`Już zabrałeś medal "${medal.name}"! Każdy może zabrać tylko jeden medal tego typu.`);
@@ -113,7 +115,7 @@ function takeMedal(medalId, marker) {
     alert(`Medal "${medal.name}" został zebrany!`);
 }
 
-// INICJALIZACJA MARKERÓW
+// init markers
 function initializeMap() {
     markers.forEach(marker => map.removeLayer(marker));
     markers = [];
@@ -135,7 +137,6 @@ function initializeMap() {
                             </button>`;
         }
 
-        // Popup bez informacji "Zebrane przez Ciebie"
         const popupContent = `
                         <div style="text-align: center; min-width: 200px;">
                             <h3 style="margin: 0 0 10px 0; color: #2c5aa0;">🏆 ${medal.name}</h3>
@@ -160,7 +161,6 @@ function initializeMap() {
     });
 }
 
-// AKTUALIZACJA LICZNIKÓW
 function updateCounters() {
     let collectedTotal = 0;
     let availableTotal = 0;
@@ -192,29 +192,25 @@ function updateMedalTable() {
     });
 }
 
-// RESPONSYWNOŚĆ MAPY
 function fitMapToScreen() {
     map.invalidateSize();
     map.fitBounds(bounds);
-
-
 }
 
-// Event listenery dla responsywności
+// Event listeners for responsiveness
 window.addEventListener('resize', function() {
     setTimeout(fitMapToScreen, 100);
 });
-
 window.addEventListener('orientationchange', function() {
     setTimeout(fitMapToScreen, 200);
 });
 
-// INICJALIZACJA PO ZAŁADOWANIU
+
 imageOverlay.on('load', function() {
     fitMapToScreen();
 });
 
-// Inicjalizacja aplikacji
+// on app init
 document.addEventListener('DOMContentLoaded', function() {
     initializeMap();
     updateCounters();

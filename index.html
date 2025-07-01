@@ -10,19 +10,19 @@
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
         crossorigin=""/>
     <link rel="stylesheet" href="style.css" />
-    
-    <style>
-
-    </style>
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
 </head>
 <body>
-    <!-- Mapa - górne 50% ekranu -->
+    <!-- Mapa - górne 70% ekranu -->
     <div id="map"></div>
     
     <!-- Przycisk resetowania -->
     <button class="reset-button" onclick="resetAllMedals()">🔄 Resetuj wszystkie</button>
     
-    <!-- Tabela medalów - dolne 50% ekranu -->
+    <!-- Tabela medalów - dolne 30% ekranu -->
     <div class="medals-table-container">
         <div class="medals-table-title">📋 Lista medali</div>
         <div class="table-wrapper">
@@ -42,16 +42,6 @@
         </div>
     </div>
 
-    <!-- Leaflet JavaScript -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-        crossorigin=""></script>
-    
-    <!-- Dane medalów -->
     <script src="medals.js"></script>
-    
-    <script>
-
-    </script>
 </body>
 </html>
