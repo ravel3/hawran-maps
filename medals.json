@@ -1,0 +1,37 @@
+[
+  {
+    "id": 73,
+    "name": "Kopanka",
+    "desc": "Kopanka",
+    "x": 189.5, "y": 1531,
+    "initial_amount": 5
+  },
+  {
+    "id": 43,
+    "name": "Lipa",
+    "desc": "Lipa opis",
+    "x": 259, "y": 1313,
+     "initial_amount":  3
+  },
+  {
+    "id": 82,
+    "name": "Złamane drzewo",
+    "desc": "Złamane drzewo - opis",
+    "x": 620.75, "y": 1600.875,
+     "initial_amount":  1
+  },
+  {
+    "id": 54,
+    "name": "Na cerkwisku",
+    "desc": "Na cerkwisku - opis",
+    "x": 507.75, "y": 1098.5,
+     "initial_amount":  6
+  },
+  {
+    "id": 74,
+    "name": "Samotny klon",
+    "desc": "Samotny klon - opis",
+    "x": 1455, "y": 229.75,
+     "initial_amount":  8
+  }
+]
