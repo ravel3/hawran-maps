@@ -49,7 +49,8 @@ const map = L.map('map', {
     minZoom: -2,
     maxZoom: 3,
     zoomControl: true,
-    scrollWheelZoom: true
+    scrollWheelZoom: true,
+    fullscreenControl: true
 });
 
 // utility method to get medals coordinates - output in a browser console
