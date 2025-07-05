@@ -54,9 +54,7 @@ function updateTakenMedal(medalId) {
 function resetAllMedals() {
     if (confirm('Czy na pewno chcesz zresetować wszystkie medale?')) {
         localStorage.removeItem('takenMedals');
-        initializeMap();
-        updateCounters();
-        updateMedalTable();
+        initializeMap(updateCounters, updateMedalTable);
     }
 }
 
@@ -73,15 +71,13 @@ function takeMedal(medalId, marker) {
 
     updateTakenMedal(medalId);
     marker.closePopup();
-    initializeMap();
-    updateCounters();
-    updateMedalTable();
+    initializeMap(updateCounters, updateMedalTable);
 
     alert(`Medal "${medal.name}" został zebrany!`);
 }
 
 // init markers
-function initializeMap() {
+function initializeMap(...onMapLoadedCallbacks) {
     markers.forEach(marker => map.removeLayer(marker));
     markers = [];
 
@@ -126,6 +122,8 @@ function initializeMap() {
             markers.push(marker);
 
         })
+
+        onMapLoadedCallbacks.forEach( callback => callback())
     });
 }
 
@@ -180,8 +178,6 @@ imageOverlay.on('load', function () {
 
 // on app init
 document.addEventListener('DOMContentLoaded', function () {
-    initializeMap();
-    updateCounters();
-    updateMedalTable();
+    initializeMap(updateCounters, updateMedalTable);
     setTimeout(fitMapToScreen, 100);
 });
